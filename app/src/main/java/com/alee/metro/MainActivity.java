@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     Spinner from,to;
     TextView tv;
+
+    ArrayList<String> itemsfrom=new ArrayList<>();
+    ArrayList<String> itemsto=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +32,30 @@ public class MainActivity extends AppCompatActivity {
         from=findViewById(R.id.from);
         to=findViewById(R.id.to);
         tv=findViewById(R.id.tvd);
+
+        //items.clear();
+        Collections.addAll(itemsfrom,"please select",
+                "حلوان", "عين حلوان", "جامعة حلوان", "وادي حوف", "حدائق حلوان", "المعصرة", "طرة الأسمنت", "كوتسيكا", "طرة البلد", " ثكنات المعادي", "المعادي", "حدائق المعادي", "دار السلام", "الزهراء", "مار جرجس", "الملك الصالح", "السيدة زينب", "سعد زغلول", "السادات", "جمال عبد الناصر", "أحمد عرابي", "الشهداء", "غمرة", "الدمرداش", "منشية الصدر", "كوبري القبة", "حمامات القبة", "سراي القبة", "حدائق الزيتون", "حلمية الزيتون", "المطرية", "عين شمس", "عزبة النخل", "المرج",
+                "المرج الجديدة","المنيب", "ساقية مكي", "ام المصريين(ضواحى الجيزةسابقا)", "فيصل", "البحوث", "الدقي", "الأوبرا", "السادات", "محمدنجيب", "العتبه", "الشهداء", "مسرة", "روض الفرج", "سانت تريزا", "الخلفاوي", "المظلات", "كليةالزراعة",
+                "شبراالخيمة","العتبه", "باب الشعرية", "الجيش", "عبدة باشا", "العباسية", "أرض المعارض", "استادالقاهرة", "كليةالبنات", "الأهرام", "هارون", "ميدان هليوبوليس", "الألف مسكن", "نادي الشمس");
+
+        Collections.addAll(itemsto,"please select",
+                "حلوان", "عين حلوان", "جامعة حلوان", "وادي حوف", "حدائق حلوان", "المعصرة", "طرة الأسمنت", "كوتسيكا", "طرة البلد", " ثكنات المعادي", "المعادي", "حدائق المعادي", "دار السلام", "الزهراء", "مار جرجس", "الملك الصالح", "السيدة زينب", "سعد زغلول", "السادات", "جمال عبد الناصر", "أحمد عرابي", "الشهداء", "غمرة", "الدمرداش", "منشية الصدر", "كوبري القبة", "حمامات القبة", "سراي القبة", "حدائق الزيتون", "حلمية الزيتون", "المطرية", "عين شمس", "عزبة النخل", "المرج",
+                "المرج الجديدة","المنيب", "ساقية مكي", "ام المصريين(ضواحى الجيزةسابقا)", "فيصل", "البحوث", "الدقي", "الأوبرا", "السادات", "محمدنجيب", "العتبه", "الشهداء", "مسرة", "روض الفرج", "سانت تريزا", "الخلفاوي", "المظلات", "كليةالزراعة",
+                "شبراالخيمة","العتبه", "باب الشعرية", "الجيش", "عبدة باشا", "العباسية", "أرض المعارض", "استادالقاهرة", "كليةالبنات", "الأهرام", "هارون", "ميدان هليوبوليس", "الألف مسكن", "نادي الشمس");
+
+
+
+        //step 2 bind items on spinner
+        //spinner->adapter->items
+        //fill items, pass items to adapter,pass adapter to spinner
+        ArrayAdapter adapterfrom=new ArrayAdapter(this, android.R.layout.simple_list_item_1,itemsfrom);
+        ArrayAdapter adapterto=new ArrayAdapter(this, android.R.layout.simple_list_item_1,itemsto);
+        from.setAdapter(adapterfrom);
+        to.setAdapter(adapterto);
+        from.setSelection(0);
+        from.setSelection(0);
+
 
     }
 
@@ -49,8 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
         String namefrist =from.getSelectedItem().toString();
 
+
+
         String namesecond =to.getSelectedItem().toString();
 
+        Toast.makeText(this, namefrist +" "+namesecond, Toast.LENGTH_LONG).show();
 
 
 
@@ -75,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
         int first = k.indexOf(namefrist);
 
         int last = c.indexOf(namesecond);
+        Toast.makeText(this, first +" "+last, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, k.size() +" "+c.size(), Toast.LENGTH_LONG).show();
 
         String[] hh={"العتبه","الشهداء","السادات"};
         if (k.size() != c.size() ) {
@@ -136,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
             String station_name=mnae;
             if (k.contains(hh[0])&&c.contains(hh[1])||k.contains(hh[1])&&c.contains(hh[0])){
                 direction.append("then go to line ");
-                direction.append(goodline22.get(0)+" and "+goodline22.get(k.size()-1));
+                direction.append(goodline22.get(0)+" and "+goodline22.get(goodline22.size()-1));
                 direction.append("direction ");
                 int mm = goodline22.indexOf(mnae);
 
@@ -230,10 +265,21 @@ public class MainActivity extends AppCompatActivity {
             else if (first>last) {
 
                 direction.append("go to direction").append(c.get(0));
+                for (int i = first+1; i >=last ; i--) {
+                    goodline11.add(c.get(i));
+                }
+                number=c.subList(last,first+1).size();
             }else {
                 direction.append("go to direction").append(c.get(c.size()-1));
+                for (String s : c.subList(first, last+1)) {
+                    line11.add(s);
+                }
+                number=c.subList(first,last+1).size();
+
+
 
             }
+
         }
 
         // String[] line11=line1.split(",");
@@ -260,18 +306,18 @@ public class MainActivity extends AppCompatActivity {
         }
         //System.out.println(stationes.toString()+">>>");
         tv.setText(direction.toString());
-        tv.append(line11.toString());
-        tv.append(line33.toString());
-        tv.append(line22.toString());
-        tv.append("the time is"+number*2);
+        tv.append("\n"+line11.toString());
+        tv.append("\n"+line33.toString());
+        tv.append("\n"+line22.toString());
+        tv.append("\nthe time is"+number*2);
 
 
         if (number < 9)
-            tv.append("The ticket =5LE");
+            tv.append("\nThe ticket =5LE");
         else if (number > 9 && number < 15)
-            tv.append("The ticket =7LE");
+            tv.append("\nThe ticket =7LE");
         else
-            tv.append("The ticket =10LE");
+            tv.append("\nThe ticket =10LE");
 
 
 
