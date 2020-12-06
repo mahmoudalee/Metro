@@ -1,11 +1,13 @@
 package com.alee.metro;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -23,6 +25,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.github.nisrulz.sensey.Sensey;
+import com.github.nisrulz.sensey.ShakeDetector;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,7 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity implements LocationListener, ShakeDetector.ShakeListener {
     List<String> goodline11 = Arrays.asList("حلوان", "عين حلوان", "جامعة حلوان", "وادي حوف", "حدائق حلوان", "المعصرة", "طرة الأسمنت", "كوتسيكا", "طرة البلد", " ثكنات المعادي", "المعادي", "حدائق المعادي", "دار السلام", "الزهراء", "مار جرجس", "الملك الصالح", "السيدة زينب", "سعد زغلول", "السادات", "جمال عبد الناصر", "أحمد عرابي", "الشهداء", "غمرة", "الدمرداش", "منشية الصدر", "كوبري القبة", "حمامات القبة", "سراي القبة", "حدائق الزيتون", "حلمية الزيتون", "المطرية", "عين شمس", "عزبة النخل", "المرج", "المرج الجديدة");
     List<String> goodline22 = Arrays.asList("المنيب", "ساقية مكي", "ام المصريين(ضواحى الجيزةسابقا)", "فيصل", "البحوث", "الدقي", "الأوبرا", "السادات", "محمدنجيب", "العتبه", "الشهداء", "مسرة", "روض الفرج", "سانت تريزا", "الخلفاوي", "المظلات", "كليةالزراعة", "شبراالخيمة");
     List<String> goodline33 = Arrays.asList("العتبه", "باب الشعرية", "الجيش", "عبدة باشا", "العباسية", "أرض المعارض", "استادالقاهرة", "كليةالبنات", "الأهرام", "هارون", "ميدان هليوبوليس", "الألف مسكن", "نادي الشمس");
@@ -65,6 +72,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         toSpinner = findViewById(R.id.to);
         tv = findViewById(R.id.tvd);
 
+
+        Sensey.getInstance().init(this);
+        Sensey.getInstance().startShakeDetection(this);
+
+        YoYo.with(Techniques.Landing)
+                .duration(2000)
+                //you can add any number to repeat the effect
+                .repeat(0)
+                .playOn(findViewById(R.id.seachBtn));
+
+        YoYo.with(Techniques.StandUp)
+                .duration(2000)
+                //you can add any number to repeat the effect
+                .repeat(0)
+                .playOn(findViewById(R.id.nearestBtn));
+
         //#############get location part###########
         progressDialog = new ProgressDialog(this,
                 R.style.AppTheme_Dark_Dialog);
@@ -79,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }else
             manager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
         //########################
+
+
+
 
         Collections.addAll(itemsfrom, "please select",
                 "حلوان", "عين حلوان", "جامعة حلوان", "وادي حوف", "حدائق حلوان", "المعصرة", "طرة الأسمنت", "كوتسيكا", "طرة البلد", " ثكنات المعادي", "المعادي", "حدائق المعادي", "دار السلام", "الزهراء", "مار جرجس", "الملك الصالح", "السيدة زينب", "سعد زغلول", "السادات", "جمال عبد الناصر", "أحمد عرابي", "الشهداء", "غمرة", "الدمرداش", "منشية الصدر", "كوبري القبة", "حمامات القبة", "سراي القبة", "حدائق الزيتون", "حلمية الزيتون", "المطرية", "عين شمس", "عزبة النخل", "المرج",
@@ -340,24 +366,35 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void direction(View view) {
-        if (fromSpinner.getSelectedItemId() ==0){
-            Toast.makeText(this,"الرجاء اختار محطتك الحاليه او الضغط على زرار اقرب محطه",Toast.LENGTH_LONG).show();
 
-
-        }else {
+        if(fromSpinner.getSelectedItemPosition() != 0) {
             progressDialog.show();
             // Do Whatever
             new Handler().post(() -> {
-                Location to = getLocation( fromSpinner.getSelectedItem().toString());
+                Location to = getLocation(fromSpinner.getSelectedItem().toString());
                 progressDialog.dismiss();
                 if (to != null) {
                     Uri uri = Uri.parse("google.navigation:q=" + to.getLatitude() + "," + to.getLongitude());
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     intent.setPackage("com.google.android.apps.maps");
+
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                    builder.setMessage("Going to navigate to : "+ fromSpinner.getSelectedItem().toString())
+//                            .setPositiveButton("OK", (dialog, id) -> {
+//                                // FIRE ZE MISSILES!
                     startActivity(intent);
+//
+//                            })
+//                            .setNegativeButton("Cancel", (dialog, id) -> {
+//                                Toast.makeText(this, "your nearest station on from selection",Toast.LENGTH_SHORT).show();
+//                            });
+//                    builder.create();
+
                 }
-            });
+            })  ;
         }
+        else
+            Toast.makeText(this,"Please enter text",Toast.LENGTH_SHORT).show();
     }
 
     //to get the lat,long of the location
@@ -436,4 +473,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         latitude = location.getLatitude();
     }
 
+    @Override
+    public void onShakeDetected() {
+        YoYo.with(Techniques.Shake)
+                .duration(2000)
+                //you can add any number to repeat the effect
+                .repeat(0)
+                .playOn(findViewById(R.id.root));
+    }
+
+    @Override
+    public void onShakeStopped() {
+        fromSpinner.setSelection(0);
+        toSpinner.setSelection(0);
+        tv.setText("");
+    }
 }
