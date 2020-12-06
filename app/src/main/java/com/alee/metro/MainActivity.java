@@ -340,25 +340,31 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void direction(View view) {
-        progressDialog.show();
-        // Do Whatever
-        new Handler().post(()->{
-            Location to = getnearest();
-            progressDialog.dismiss();
-            if (to != null){
-                Uri uri = Uri.parse("google.navigation:q="+to.getLatitude()+","+to.getLongitude());
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                intent.setPackage("com.google.android.apps.maps");
-                startActivity(intent);
-            }
-        });
+        if (fromSpinner.getSelectedItemId() ==0){
+            Toast.makeText(this,"الرجاء اختار محطتك الحاليه او الضغط على زرار اقرب محطه",Toast.LENGTH_LONG).show();
+
+
+        }else {
+            progressDialog.show();
+            // Do Whatever
+            new Handler().post(() -> {
+                Location to = getLocation( fromSpinner.getSelectedItem().toString());
+                progressDialog.dismiss();
+                if (to != null) {
+                    Uri uri = Uri.parse("google.navigation:q=" + to.getLatitude() + "," + to.getLongitude());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.setPackage("com.google.android.apps.maps");
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     //to get the lat,long of the location
     private Location getLocation(String address){
         Geocoder geocoder = new Geocoder(this);
         try {
-            List<Address> addressList = geocoder.getFromLocationName(address + " مترو مصر",1);
+            List<Address> addressList = geocoder.getFromLocationName(address + "مترو مصر ",1);
             if (addressList != null & !addressList.isEmpty()){
                 Location loc = new Location("");
                 loc.setLatitude(addressList.get(0).getLatitude());
@@ -415,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             if (grantResults[0]==PackageManager.PERMISSION_GRANTED){
                 try {
                     manager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, this, null);
+
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
@@ -428,5 +435,5 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         longitude = location.getLongitude();
         latitude = location.getLatitude();
     }
-    
+
 }
