@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     LocationManager manager;
     double longitude =-1 , latitude = -1;
     ProgressDialog progressDialog;
+    AlertDialog.Builder builder;
 
     ArrayList<String> itemsfrom = new ArrayList<>();
     ArrayList<String> itemsto = new ArrayList<>();
@@ -76,17 +77,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         Sensey.getInstance().init(this);
         Sensey.getInstance().startShakeDetection(this);
 
-        YoYo.with(Techniques.Landing)
-                .duration(2000)
-                //you can add any number to repeat the effect
-                .repeat(0)
-                .playOn(findViewById(R.id.seachBtn));
-
-        YoYo.with(Techniques.StandUp)
-                .duration(2000)
-                //you can add any number to repeat the effect
-                .repeat(0)
-                .playOn(findViewById(R.id.nearestBtn));
 
         //#############get location part###########
         progressDialog = new ProgressDialog(this,
@@ -132,6 +122,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         String dir = pref.getString("direction", "");
         tv.setText(dir);
 
+
+        YoYo.with(Techniques.StandUp)
+                .duration(2000)
+                //you can add any number to repeat the effect
+                .repeat(0)
+                .playOn(findViewById(R.id.seachBtn));
+
+        YoYo.with(Techniques.BounceIn)
+                .duration(3500)
+                //you can add any number to repeat the effect
+                .repeat(0)
+                .playOn(findViewById(R.id.nearestBtn));
+
+        YoYo.with(Techniques.RotateIn)
+                .duration(4000)
+                //you can add any number to repeat the effect
+                .repeat(0)
+                .playOn(findViewById(R.id.navigate));
 
     }
 
@@ -429,17 +437,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             for (int i = 1; i < fromSpinner.getCount(); i++) {
                 itemString = fromSpinner.getItemAtPosition(i).toString();
                 Location to = getLocation(itemString);
-                distance = myLocation.distanceTo(to);
-                if (i==1){
-                    min = distance;
-                    minPos = i;
-                    nearest = to;
-                }
-                else{
-                    if (min > distance){
+                if(to != null){
+                    distance = myLocation.distanceTo(to);
+                    if (i==1){
                         min = distance;
                         minPos = i;
                         nearest = to;
+                    }
+                    else{
+                        if (min > distance){
+                            min = distance;
+                            minPos = i;
+                            nearest = to;
+                        }
                     }
                 }
             }
@@ -484,8 +494,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public void onShakeStopped() {
-        fromSpinner.setSelection(0);
-        toSpinner.setSelection(0);
-        tv.setText("");
+
+        builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to clear the data? ")
+                .setPositiveButton("OK", (dialog, id) -> {
+
+                    fromSpinner.setSelection(0);
+                    toSpinner.setSelection(0);
+                    tv.setText("");
+
+                })
+                .setNegativeButton("Cancel", (dialog, id) -> {
+                    Toast.makeText(this, "Select Station to from ",Toast.LENGTH_SHORT).show();
+                });
+        builder.create();
+        builder.show();
+
     }
 }
